@@ -1,0 +1,66 @@
+options
+{
+	LOOKAHEAD=2;
+	FORCE_LA_CHECK=true;
+}
+
+PARSER_BEGIN(CFlow)
+
+	public class CFlow {
+		public static void main(String args[]) throws ParseException {
+			if(args.length != 1){
+				System.out.println("usage: cflow <program_path>");
+				return;
+			}
+			String path = args[0];
+			System.out.print("Write the regex: ");
+			CFlow regexpRecog = new CFlow(System.in);
+			regexpRecog.Recognize();
+		}
+	}
+PARSER_END(CFlow)
+
+SKIP:
+{
+" " | "\t" | "\r"
+}
+
+TOKEN:
+{
+	/*<RE: 			((<SIMPLE_RE> "|")* <SIMPLE_RE>)> |
+	<SIMPLE_RE: 	((<BASIC_RE>)+)> | 						//concatenates
+	<BASIC_RE: 		(<STAR> | <PLUS> | <ELEMENTARY_RE>)> |
+	<STAR: 			(<ELEMENTARY_RE> "*")> |
+	<PLUS:			(<ELEMENTARY_RE> "+")> |
+	<ELEMENTARY_RE: (<GROUP> | <ANY> | <CHARACTER>)> |
+	<GROUP:			("(" <RE> ")")> |*/
+
+	<QUANTIFIER:	("+" | "*" )> |
+
+	<CHARACTER:		(["A"-"Z"] | ["a"-"z"] | ["0"-"9"])> |
+	<ANY:			(".")> |
+
+  	<LF: "\n">
+}
+
+void Recognize() : {}
+{
+	RegExp() <LF>
+}
+
+void RegExp() : {}
+{
+	Quantifiable() [["|"] RegExp()]
+}
+
+void Quantifiable() : {} //also concatenates
+{
+	Basic() [<QUANTIFIER>]
+}
+
+void Basic() : {}
+{
+	<CHARACTER> |
+	<ANY> |
+	"(" RegExp() ")"
+}
