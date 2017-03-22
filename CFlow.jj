@@ -27,16 +27,16 @@ SKIP:
 
 TOKEN:
 {
-	/*<RE: 			((<SIMPLE_RE> "|")* <SIMPLE_RE>)> |
-	<SIMPLE_RE: 	((<BASIC_RE>)+)> | 						//concatenates
-	<BASIC_RE: 		(<STAR> | <PLUS> | <ELEMENTARY_RE>)> |
-	<STAR: 			(<ELEMENTARY_RE> "*")> |
-	<PLUS:			(<ELEMENTARY_RE> "+")> |
-	<ELEMENTARY_RE: (<GROUP> | <ANY> | <CHARACTER>)> |
-	<GROUP:			("(" <RE> ")")> |*/
-
-	<QUANTIFIER:	("+" | "*" )> |
-
+	<LINESTART: 	<NEG>> |
+	<LINEEND: 		"$"> |
+	<PIPE:			"|"> |
+	<QUANTIFIER:	("+" | "*" | "?")> |
+	<NEG:			"^"> |
+	/*TODO:
+	!
+	\
+	{}
+	*/
 	<CHARACTER:		(["A"-"Z"] | ["a"-"z"] | ["0"-"9"])> |
 	<ANY:			(".")> |
 
@@ -45,15 +45,15 @@ TOKEN:
 
 void Recognize() : {}
 {
-	RegExp() <LF>
+	[<LINESTART>] RegExp() [<LINEEND>] <LF>
 }
 
 void RegExp() : {}
 {
-	Quantifiable() [["|"] RegExp()]
+	Quantifiable() [[<PIPE>] RegExp()]
 }
 
-void Quantifiable() : {} //also concatenates
+void Quantifiable() : {}
 {
 	Basic() [<QUANTIFIER>]
 }
@@ -62,5 +62,11 @@ void Basic() : {}
 {
 	<CHARACTER> |
 	<ANY> |
+	"[" [<NEG>] Set() "]" |
 	"(" RegExp() ")"
+}
+
+void Set() : {}
+{
+	<CHARACTER> ["-" <CHARACTER>] [Set()]
 }
