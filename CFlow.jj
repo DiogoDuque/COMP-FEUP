@@ -29,15 +29,22 @@ TOKEN:
 {
 	<LINESTART: 	<NEG>> |
 	<LINEEND: 		"$"> |
-	<PIPE:			"|"> |
+	<OR:			"|"> |
 	<QUANTIFIER:	("+" | "*" | "?")> |
 	<NEG:			"^"> |
+	<OPEN_GROUP:	"("> |
+	<CLOSE_GROUP:	")"> |
+	<OPEN_SET:		"["> |
+	<CLOSE_SET:		"]"> |
+	<OPEN_REPEAT:	"{"> |
+	<CLOSE_REPEAT:	"}"> |
 	/*TODO:
 	!
 	\
 	{}
 	*/
-	<CHARACTER:		(["A"-"Z"] | ["a"-"z"] | ["0"-"9"])> |
+	<CHARACTER:		(["A"-"Z"] | ["a"-"z"])> |
+	<NUMBER:		["0"-"9"]> |
 	<ANY:			(".")> |
 
   	<LF: "\n">
@@ -50,23 +57,34 @@ void Recognize() : {}
 
 void RegExp() : {}
 {
-	Quantifiable() [[<PIPE>] RegExp()]
+	Quantifiable() [[<OR>] RegExp()]
 }
 
 void Quantifiable() : {}
 {
-	Basic() [<QUANTIFIER>]
+	Basic() [Quantifier()]
+}
+
+void Quantifier() : {}
+{
+	<QUANTIFIER> |
+	<OPEN_REPEAT> Number() ["," [Number()]] <CLOSE_REPEAT>
 }
 
 void Basic() : {}
 {
 	<CHARACTER> |
 	<ANY> |
-	"[" [<NEG>] Set() "]" |
-	"(" RegExp() ")"
+	<OPEN_SET> [<NEG>] Set() <CLOSE_SET> |//[SET] [^SET]
+	<OPEN_GROUP> RegExp() <CLOSE_GROUP> 		//(RegExp)
 }
 
 void Set() : {}
 {
 	<CHARACTER> ["-" <CHARACTER>] [Set()]
+}
+
+void Number() : {}
+{
+	<NUMBER> [<NUMBER>]
 }
