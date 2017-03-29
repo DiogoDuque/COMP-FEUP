@@ -38,15 +38,15 @@ TOKEN:
 	<CLOSE_SET:		"]"> |
 	<OPEN_REPEAT:	"{"> |
 	<CLOSE_REPEAT:	"}"> |
-	/*TODO:
-	!
-	\
-	{}
-	*/
+
 	<CHARACTER:		(["A"-"Z"] | ["a"-"z"])> |
 	<NUMBER:		["0"-"9"]> |
 	<ANY:			(".")> |
 
+	/*<WORD:			"\\w"> |
+	<NON_WORD:		"\\W"> |
+	<DIGIT:			"\\d"> |
+	<NON_DIGIT:		"\\D"> |*/
   	<LF: "\n">
 }
 
@@ -75,16 +75,17 @@ void Basic() : {}
 {
 	<CHARACTER> |
 	<ANY> |
+	<NUMBER> |
 	<OPEN_SET> [<NEG>] Set() <CLOSE_SET> |//[SET] [^SET]
 	<OPEN_GROUP> RegExp() <CLOSE_GROUP> 		//(RegExp)
 }
 
 void Set() : {}
 {
-	<CHARACTER> ["-" <CHARACTER>] [Set()]
+	(<CHARACTER> | <NUMBER>) ["-" (<CHARACTER> | <NUMBER>)] [Set()]
 }
 
 void Number() : {}
 {
-	<NUMBER> [<NUMBER>]
+	<NUMBER> [Number()]
 }
