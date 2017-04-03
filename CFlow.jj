@@ -68,7 +68,7 @@ void Quantifiable() : {}
 void Quantifier() : {}
 {
 	<QUANTIFIER> |
-	<OPEN_REPEAT> Number() ["," [Number()]] <CLOSE_REPEAT>
+	<OPEN_REPEAT> (Number() ["," [Number()]] | "," Number()) <CLOSE_REPEAT>
 }
 
 void Basic() : {}
