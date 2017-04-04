@@ -67,9 +67,15 @@ TOKEN:
   	<LF: "\n">
 }
 
-SimpleNode RegExp() #Expression : {}
+SimpleNode RegExp() #Expression:
 {
-	Expr() [Union() #Union(2)]
+}
+{
+	Expr() [Union()
+	{
+		jjtThis.value = "|";
+	}
+	#Union(2)]
 	{
 	       return jjtThis;
 	}
