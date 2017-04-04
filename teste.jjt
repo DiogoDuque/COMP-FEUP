@@ -1,0 +1,114 @@
+options
+{
+	LOOKAHEAD=2;
+	FORCE_LA_CHECK=true;
+}
+
+PARSER_BEGIN(CFlow)
+
+	public class CFlow {
+		public static void main(String args[]) throws ParseException {
+			if(args.length != 1){
+				System.out.println("usage: cflow <program_path>");
+				return;
+			}
+			String path = args[0];
+			System.out.print("Write the regex: ");
+			CFlow regexpRecog = new CFlow(System.in);
+			SimpleNode root = regexpRecog.RegExp();
+			root.dump("");
+		}
+	}
+PARSER_END(CFlow)
+
+SKIP:
+{
+" " | "\t" | "\r"
+}
+
+TOKEN:
+{
+	<LINESTART: 	<NEG>> |
+	<LINEEND: 		"$"> |
+	<OR:			"|"> |
+	<QUANTIFIER:	("+" | "?")> |
+	<NEG:			"^"> |
+	<OPEN_GROUP:	"("> |
+	<CLOSE_GROUP:	")"> |
+	<OPEN_SET:		"["> |
+	<CLOSE_SET:		"]"> |
+	<OPEN_REPEAT:	"{"> |
+	<CLOSE_REPEAT:	"}"> |
+	<KLEEN_CLOSURE: "*"> |
+
+	<CHARACTER:		(["A"-"Z"] | ["a"-"z"])> |
+	<NUMBER:		["0"-"9"]> |
+	<ANY:			(".")> |
+
+  	<LF: "\n">
+}
+
+SimpleNode RegExp() #Expression : {}
+{
+	Expr() [Union()] {return jjtThis;}
+}
+
+void Union() #Union: {}
+{
+	<OR> Expr()
+}
+
+void Expr() #Concat: {}
+{
+	BasicExp() [Expr()]
+}
+
+void BasicExp() : {}
+{
+	ElementaryRegex() [("*"|"+")]
+}
+
+void ElementaryRegex() #void: {}
+{
+	Group() | <ANY> | <LINEEND> | Set() | Char()
+}
+
+void Char(): {}
+{
+	<NUMBER> | <CHARACTER> 
+}
+
+void Group(): {}
+{
+	"(" RegExp() ")"
+}
+
+void Set(): {}
+{
+	PositiveSet() | NegativeSet()
+}
+
+void PositiveSet(): {}
+{
+	"[" SetItems() "]"
+}
+
+void NegativeSet(): {}
+{
+	"[^" SetItems() "]"
+}
+
+void SetItems(): {}
+{
+	SetItem() [SetItems()]
+}
+
+void SetItem(): {}
+{
+	Range() | Char()
+}
+
+void Range(): {}
+{
+	Char() "-" Char()
+}
