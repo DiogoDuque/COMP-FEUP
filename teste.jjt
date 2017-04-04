@@ -14,78 +14,128 @@ PARSER_BEGIN(CFlow)
 			}
 			String path = args[0];
 			System.out.print("Write the regex: ");
+			
 			CFlow regexpRecog = new CFlow(System.in);
 			SimpleNode root = regexpRecog.RegExp();
 			root.dump("");
 		}
 	}
+	
 PARSER_END(CFlow)
 
 SKIP:
 {
-" " | "\t" | "\r"
+	" "
+	|
+	"\t"
+	|
+	"\r"
 }
 
 TOKEN:
 {
-	<LINESTART: 	<NEG>> |
-	<LINEEND: 		"$"> |
-	<OR:			"|"> |
-	<QUANTIFIER:	("+" | "?")> |
-	<NEG:			"^"> |
-	<OPEN_GROUP:	"("> |
-	<CLOSE_GROUP:	")"> |
-	<OPEN_SET:		"["> |
-	<CLOSE_SET:		"]"> |
-	<OPEN_REPEAT:	"{"> |
-	<CLOSE_REPEAT:	"}"> |
-	<KLEEN_CLOSURE: "*"> |
-
-	<CHARACTER:		(["A"-"Z"] | ["a"-"z"])> |
-	<NUMBER:		["0"-"9"]> |
-	<ANY:			(".")> |
-
+	<LINESTART: "^">
+	|
+	<LINEEND: "$">
+	|
+	<OR: "|">
+	|
+	<QUANTIFIER: "?">
+	|
+	<OPEN_GROUP: "(">
+	|
+	<CLOSE_GROUP: ")">
+	|
+	<OPEN_SET: "[">
+	|
+	<CLOSE_SET: "]">
+	|
+	<OPEN_REPEAT: "{">
+	|
+	<CLOSE_REPEAT: "}">
+	|
+	<KLEEN_CLOSURE: "*">
+	|
+	<PLUS: "+">
+	|
+	<CHARACTER: (["A"-"Z"] | ["a"-"z"])>
+	|
+	<NUMBER: ["0"-"9"]>
+	|
+	<ANY: ".">
+	|
   	<LF: "\n">
 }
 
 SimpleNode RegExp() #Expression : {}
 {
-	Expr() [Union()] {return jjtThis;}
+	Expr() [Union() #Union(2)]
+	{
+	       return jjtThis;
+	}
 }
 
-void Union() #Union: {}
+void Union() #void: {}
 {
 	<OR> Expr()
 }
 
-void Expr() #Concat: {}
+void Expr() #void: {}
 {
-	BasicExp() [Expr()]
+	BasicExp() [Expr() #Concat(2)]
 }
 
-void BasicExp() : {}
+void BasicExp() #void:
 {
-	ElementaryRegex() [("*"|"+")]
+	Token t;
+}
+{
+	ElementaryRegex() [(t = "*"|t = "+")
+	{
+		jjtThis.value = t.image;
+	}
+	#Repeat(1)]
 }
 
 void ElementaryRegex() #void: {}
 {
-	Group() | <ANY> | <LINEEND> | Set() | Char()
+	Group()
+	|
+	<ANY>
+	|
+	<LINEEND>
+	|
+	Set()
+	|
+	Char()
 }
 
-void Char(): {}
+void Char():
 {
-	<NUMBER> | <CHARACTER> 
+	Token t1, t2;
+}
+{
+	t1 = <NUMBER>
+	{
+		jjtThis.value = t1.image;
+	}
+	|
+	t2 = <CHARACTER>
+	{
+		jjtThis.value = t2.image;
+	}
 }
 
-void Group(): {}
+void Group() #void: {}
 {
 	"(" RegExp() ")"
 }
 
-void Set(): {}
+void Set() #void: {}
 {
-	PositiveSet() | NegativeSet()
+	PositiveSet()
+	|
+	NegativeSet()
 }
 
 void PositiveSet(): {}
@@ -98,14 +148,16 @@ void NegativeSet(): {}
 	"[^" SetItems() "]"
 }
 
-void SetItems(): {}
+void SetItems() #void: {}
 {
 	SetItem() [SetItems()]
 }
 
-void SetItem(): {}
+void SetItem() #void: {}
 {
-	Range() | Char()
+	Range() 
+	|
+	Char()
 }
 
 void Range(): {}
