@@ -96,7 +96,7 @@ void BasicExp() #void:
 	Token t;
 }
 {
-	ElementaryRegex() [(t = "*"|t = "+")
+	ElementaryRegex() [(t = "*"|t = "+"|t = "?") //TODO add RANGE
 	{
 		jjtThis.value = t.image;
 	}
