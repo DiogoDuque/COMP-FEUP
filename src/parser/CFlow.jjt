@@ -1,0 +1,173 @@
+options
+{
+	LOOKAHEAD=2;
+	FORCE_LA_CHECK=true;
+}
+
+PARSER_BEGIN(CFlow)
+package parser;
+
+public class CFlow {
+	public static void main(String args[]) throws ParseException {
+		if(args.length != 1){
+			System.out.println("usage: cflow <program_path>");
+			return;
+		}
+		String path = args[0];
+		System.out.print("Write the regex: ");
+			
+		CFlow regexpRecog = new CFlow(System.in);
+		SimpleNode root = regexpRecog.RegExp();
+		root.dump("");
+	}
+}
+	
+PARSER_END(CFlow)
+
+SKIP:
+{
+	" "
+	|
+	"\t"
+	|
+	"\r"
+}
+
+TOKEN:
+{
+	<LINESTART: "^">
+	|
+	<LINEEND: "$">
+	|
+	<OR: "|">
+	|
+	<QUANTIFIER: "?">
+	|
+	<OPEN_GROUP: "(">
+	|
+	<CLOSE_GROUP: ")">
+	|
+	<OPEN_SET: "[">
+	|
+	<CLOSE_SET: "]">
+	|
+	<OPEN_REPEAT: "{">
+	|
+	<CLOSE_REPEAT: "}">
+	|
+	<KLEEN_CLOSURE: "*">
+	|
+	<PLUS: "+">
+	|
+	<CHARACTER: (["A"-"Z"] | ["a"-"z"])>
+	|
+	<NUMBER: ["0"-"9"]>
+	|
+	<ANY: ".">
+	|
+  	<LF: "\n">
+}
+
+SimpleNode RegExp() #Expression:
+{
+}
+{
+	Expr() [Union()
+	{
+		jjtThis.value = "|";
+	}
+	#Union(2)]
+	{
+	    return jjtThis;
+	}
+}
+
+void Union() #void: {}
+{
+	<OR> Expr()
+}
+
+void Expr() #void: {}
+{
+	BasicExp() [Expr() #Concat(2)]
+}
+
+void BasicExp() #void:
+{
+	Token t;
+}
+{
+	ElementaryRegex() [(t = "*" | t = "+" | t = "?")
+	{
+		jjtThis.value = t.image;
+	}
+	#Repeat(1)]
+}
+
+void ElementaryRegex() #void: {}
+{
+	Group()
+	|
+	<ANY>
+	|
+	<LINEEND>
+	|
+	Set()
+	|
+	Char()
+}
+
+void Char():
+{
+	Token t1, t2;
+}
+{
+	t1 = <NUMBER>
+	{
+		jjtThis.value = t1.image;
+	}
+	|
+	t2 = <CHARACTER>
+	{
+		jjtThis.value = t2.image;
+	}
+}
+
+void Group() #void: {}
+{
+	"(" RegExp() ")"
+}
+
+void Set() #void: {}
+{
+	PositiveSet()
+	|
+	NegativeSet()
+}
+
+void PositiveSet(): {}
+{
+	"[" SetItems() "]"
+}
+
+void NegativeSet(): {}
+{
+	"[^" SetItems() "]"
+}
+
+void SetItems() #void: {}
+{
+	SetItem() [SetItems()]
+}
+
+void SetItem() #void: {}
+{
+	Range() 
+	|
+	Char()
+}
+
+void Range(): {}
+{
+	Char() "-" Char()
+}
