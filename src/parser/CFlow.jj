@@ -8,6 +8,8 @@
 PARSER_BEGIN(CFlow)
 package parser;
 
+import automata.NFA;
+
 public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTCFlowState jjtree = new JJTCFlowState();
 
@@ -23,6 +25,9 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants/*@egen*/ {/*@bg
 		CFlow regexpRecog = new CFlow(System.in);
 		SimpleNode root = regexpRecog.RegExp();
 		root.dump("");
+
+		NFA nfa = NFA.init(root);
+		nfa.dump();
 	}
 }
 	

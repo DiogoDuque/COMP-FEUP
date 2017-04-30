@@ -7,6 +7,8 @@ options
 PARSER_BEGIN(CFlow)
 package parser;
 
+import automata.NFA;
+
 public class CFlow {
 	public static void main(String args[]) throws ParseException {
 		if(args.length != 1){
@@ -19,6 +21,9 @@ public class CFlow {
 		CFlow regexpRecog = new CFlow(System.in);
 		SimpleNode root = regexpRecog.RegExp();
 		root.dump("");
+
+		NFA nfa = NFA.init(root);
+		nfa.dump();
 	}
 }
 	
