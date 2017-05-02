@@ -48,6 +48,12 @@ public class NFA {
                     NFA = optional(root);
                 }
                 break;
+            case "PositiveSet":
+                NFA = positiveset(root);
+                break;
+            case "Range":
+                NFA = range(root);
+                break;
             // TODO: Adicionar os restantess
         }
         return NFA;
@@ -60,27 +66,6 @@ public class NFA {
         FiniteState q0 = new FiniteState();
         FiniteState q1 = new FiniteState();
         q0.addTransition(q1, value);
-
-        NFA.setInitialState(q0);
-        NFA.setFinalState(q1);
-        return NFA;
-    }
-
-    public static NFA range(SimpleNode root) {
-        NFA NFA = new NFA();
-        SimpleNode first = (SimpleNode) root.jjtGetChild(0);
-        SimpleNode second = (SimpleNode) root.jjtGetChild(1);
-
-        int begin = ((String) first.jjtGetValue()).charAt(0);
-        int end = ((String) second.jjtGetValue()).charAt(0);
-
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
-
-        for (int i = begin; i <= end; i++) {
-            String value = Character.toString((char) i);
-            q0.addTransition(q1, value);
-        }
 
         NFA.setInitialState(q0);
         NFA.setFinalState(q1);
@@ -168,6 +153,47 @@ public class NFA {
         q0.addTransition(inner.getInitialState(), EPSILON);
         q0.addTransition(q1, EPSILON);
         inner.getFinalState().addTransition(q1, EPSILON);
+
+        NFA.setInitialState(q0);
+        NFA.setFinalState(q1);
+        return NFA;
+    }
+
+    public static NFA positiveset(SimpleNode root) {
+        NFA NFA = new NFA();
+        int numChildren = root.jjtGetNumChildren();
+
+        FiniteState q0 = new FiniteState();
+        FiniteState q1 = new FiniteState();
+
+        for (int i = 0; i < root.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) root.jjtGetChild(i);
+            NFA inner = init(child);
+
+            q0.addTransition(inner.getInitialState(), EPSILON);
+            inner.getFinalState().addTransition(q1, EPSILON);
+        }
+
+        NFA.setInitialState(q0);
+        NFA.setFinalState(q1);
+        return NFA;
+    }
+
+    public static NFA range(SimpleNode root) {
+        NFA NFA = new NFA();
+        SimpleNode first = (SimpleNode) root.jjtGetChild(0);
+        SimpleNode second = (SimpleNode) root.jjtGetChild(1);
+
+        int begin = ((String) first.jjtGetValue()).charAt(0);
+        int end = ((String) second.jjtGetValue()).charAt(0);
+
+        FiniteState q0 = new FiniteState();
+        FiniteState q1 = new FiniteState();
+
+        for (int i = begin; i <= end; i++) {
+            String value = Character.toString((char) i);
+            q0.addTransition(q1, value);
+        }
 
         NFA.setInitialState(q0);
         NFA.setFinalState(q1);

@@ -24,7 +24,7 @@ public class CFlow {
 
 		CFlow cflow = new CFlow(reader);
 		SimpleNode root = cflow.RegExp();
-		//root.dump("");
+		root.dump("");
 
 		NFA nfa = NFA.init(root);
 		nfa.display();
