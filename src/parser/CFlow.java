@@ -18,6 +18,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
 
                 CFlow cflow = new CFlow(reader);
                 SimpleNode root = cflow.RegExp();
+                root.dump("");
 
                 NFA nfa = NFA.init(root);
                 nfa.display();
@@ -74,7 +75,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
 
   static final public void Union() throws ParseException {
     jj_consume_token(OR);
-    Expr();
+    RegExp();
   }
 
   static final public void Expr() throws ParseException {
@@ -437,7 +438,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
     finally { jj_save(17, xla); }
   }
 
-  static private boolean jj_3R_11() {
+  static private boolean jj_3R_10() {
     if (jj_3R_2()) return true;
     return false;
   }
@@ -549,7 +550,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
     return false;
   }
 
-  static private boolean jj_3R_10() {
+  static private boolean jj_3R_11() {
     if (jj_3R_13()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -583,7 +584,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
   }
 
   static private boolean jj_3R_2() {
-    if (jj_3R_10()) return true;
+    if (jj_3R_11()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_2()) jj_scanpos = xsp;
@@ -592,13 +593,13 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants, CFlowConstants
 
   static private boolean jj_3R_3() {
     if (jj_scan_token(OPEN_GROUP)) return true;
-    if (jj_3R_11()) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 
   static private boolean jj_3R_1() {
     if (jj_scan_token(OR)) return true;
-    if (jj_3R_2()) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 

@@ -66,6 +66,27 @@ public class NFA {
         return NFA;
     }
 
+    public static NFA range(SimpleNode root) {
+        NFA NFA = new NFA();
+        SimpleNode first = (SimpleNode) root.jjtGetChild(0);
+        SimpleNode second = (SimpleNode) root.jjtGetChild(1);
+
+        int begin = ((String) first.jjtGetValue()).charAt(0);
+        int end = ((String) second.jjtGetValue()).charAt(0);
+
+        FiniteState q0 = new FiniteState();
+        FiniteState q1 = new FiniteState();
+
+        for (int i = begin; i <= end; i++) {
+            String value = Character.toString((char) i);
+            q0.addTransition(q1, value);
+        }
+
+        NFA.setInitialState(q0);
+        NFA.setFinalState(q1);
+        return NFA;
+    }
+
     public static NFA union(SimpleNode root) {
         NFA NFA = new NFA();
         SimpleNode first = (SimpleNode) root.jjtGetChild(0);

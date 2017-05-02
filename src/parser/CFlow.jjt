@@ -24,6 +24,7 @@ public class CFlow {
 
 		CFlow cflow = new CFlow(reader);
 		SimpleNode root = cflow.RegExp();
+		//root.dump("");
 
 		NFA nfa = NFA.init(root);
 		nfa.display();
@@ -92,7 +93,7 @@ SimpleNode RegExp() #Expression:
 
 void Union() #void: {}
 {
-	<OR> Expr()
+	<OR> RegExp()
 }
 
 void Expr() #void: {}

@@ -28,6 +28,7 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants/*@egen*/ {/*@bg
 
 		CFlow cflow = new CFlow(reader);
 		SimpleNode root = cflow.RegExp();
+		root.dump("");
 
 		NFA nfa = NFA.init(root);
 		nfa.display();
@@ -145,7 +146,7 @@ SimpleNode RegExp()            :
 
 void Union()      : {}
 {
-	<OR> Expr()
+	<OR> RegExp()
 }
 
 void Expr()      : {}
