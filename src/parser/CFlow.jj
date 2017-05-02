@@ -8,6 +8,8 @@
 PARSER_BEGIN(CFlow)
 package parser;
 
+import java.io.StringReader;
+
 import automata.NFA;
 
 public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
@@ -15,19 +17,20 @@ public class CFlow/*@bgen(jjtree)*/implements CFlowTreeConstants/*@egen*/ {/*@bg
 
 /*@egen*/
 	public static void main(String args[]) throws ParseException {
+		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+
 		if(args.length != 1){
-			System.out.println("usage: cflow <program_path>");
+			System.out.println("usage: cflow <regex>");
 			return;
 		}
-		String path = args[0];
-		System.out.print("Write the regex: ");
-			
-		CFlow regexpRecog = new CFlow(System.in);
-		SimpleNode root = regexpRecog.RegExp();
-		root.dump("");
+		String regex = args[0];	
+		StringReader reader = new StringReader(regex);
+
+		CFlow cflow = new CFlow(reader);
+		SimpleNode root = cflow.RegExp();
 
 		NFA nfa = NFA.init(root);
-		nfa.dump();
+		nfa.display();
 	}
 }
 	

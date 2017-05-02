@@ -20,32 +20,20 @@ public class FiniteState {
         }
     }
 
-    public HashMap<String, ArrayList<FiniteState>> getTransitions() {
-        return transitions;
-    }
-
     public void merge(FiniteState other) {
         HashMap<String, ArrayList<FiniteState>> others = other.getTransitions();
-        for (String key : others.keySet()) {
-            ArrayList<FiniteState> value = others.get(key);
-            if (transitions.get(key) == null) {
-                transitions.put(key, value);
-            } else {
-                for (FiniteState state : value) {
-                    transitions.get(key).add(state);
-                }
-            }
-        }
+        transitions.putAll(others);
     }
 
-    public void dump(String prefix) {
-        System.out.println(prefix + "#State");
-        for (String input : transitions.keySet()) {
-            System.out.println(prefix + "#Transition <" + input + ">:");
-            ArrayList<FiniteState> nexts = transitions.get(input);
-            for (FiniteState next : nexts) {
-                next.dump(prefix + "  ");
-            }
+    public ArrayList<FiniteState> getChildren() {
+        ArrayList<FiniteState> children = new ArrayList<>();
+        for (ArrayList<FiniteState> transition : transitions.values()) {
+            children.addAll(transition);
         }
+        return children;
+    }
+
+    public HashMap<String, ArrayList<FiniteState>> getTransitions() {
+        return transitions;
     }
 }
