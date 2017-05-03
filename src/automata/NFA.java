@@ -9,7 +9,7 @@ import org.graphstream.graph.implementations.*;
 import parser.SimpleNode;
 
 public class NFA {
-    private static final String EPSILON = "ε";
+    static final String EPSILON = "ε";
 
     private NFiniteState initialState;
     private NFiniteState finalState;
