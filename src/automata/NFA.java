@@ -6,15 +6,13 @@ import java.util.Stack;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 
-import automata.FiniteState;
-import parser.CFlowTreeConstants;
 import parser.SimpleNode;
 
 public class NFA {
     private static final String EPSILON = "ε";
 
-    private FiniteState initialState;
-    private FiniteState finalState;
+    private NFiniteState initialState;
+    private NFiniteState finalState;
 
     private NFA() {
         initialState = null;
@@ -63,8 +61,8 @@ public class NFA {
         NFA NFA = new NFA();
         String value = (String) root.jjtGetValue();
         
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
         q0.addTransition(q1, value);
 
         NFA.setInitialState(q0);
@@ -80,8 +78,8 @@ public class NFA {
         NFA left = init(first);
         NFA right = init(second);
 
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         q0.addTransition(left.getInitialState(), EPSILON);
         q0.addTransition(right.getInitialState(), EPSILON);
@@ -112,8 +110,8 @@ public class NFA {
         SimpleNode child = (SimpleNode) root.jjtGetChild(0);
         NFA inner = init(child);
         
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         q0.addTransition(q1, EPSILON);
         q0.addTransition(inner.getInitialState(), EPSILON);
@@ -130,8 +128,8 @@ public class NFA {
         SimpleNode child = (SimpleNode) root.jjtGetChild(0);
         NFA inner = init(child);
 
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         q0.addTransition(inner.getInitialState(), EPSILON);
         inner.getFinalState().addTransition(inner.getInitialState(), EPSILON);
@@ -147,8 +145,8 @@ public class NFA {
         SimpleNode child = (SimpleNode) root.jjtGetChild(0);
         NFA inner = init(child);
 
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         q0.addTransition(inner.getInitialState(), EPSILON);
         q0.addTransition(q1, EPSILON);
@@ -163,8 +161,8 @@ public class NFA {
         NFA NFA = new NFA();
         int numChildren = root.jjtGetNumChildren();
 
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         for (int i = 0; i < root.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) root.jjtGetChild(i);
@@ -187,8 +185,8 @@ public class NFA {
         int begin = ((String) first.jjtGetValue()).charAt(0);
         int end = ((String) second.jjtGetValue()).charAt(0);
 
-        FiniteState q0 = new FiniteState();
-        FiniteState q1 = new FiniteState();
+        NFiniteState q0 = new NFiniteState();
+        NFiniteState q1 = new NFiniteState();
 
         for (int i = begin; i <= end; i++) {
             String value = Character.toString((char) i);
@@ -200,35 +198,35 @@ public class NFA {
         return NFA;
     }
 
-    public void setInitialState(FiniteState state) {
+    public void setInitialState(NFiniteState state) {
         initialState = state;
 
     }
 
-    public void setFinalState(FiniteState state) {
+    public void setFinalState(NFiniteState state) {
         finalState = state;
     }
 
-    public FiniteState getInitialState() {
+    public NFiniteState getInitialState() {
         return initialState;
     }
 
-    public FiniteState getFinalState() {
+    public NFiniteState getFinalState() {
         return finalState;
     }
 
-    public ArrayList<FiniteState> getAllStates() {
-        Stack<FiniteState> frontier = new Stack<>();
-        ArrayList<FiniteState> visited =new ArrayList<>();
-        FiniteState initial = initialState;
+    public ArrayList<NFiniteState> getAllStates() {
+        Stack<NFiniteState> frontier = new Stack<>();
+        ArrayList<NFiniteState> visited =new ArrayList<>();
+        NFiniteState initial = initialState;
 
         frontier.push(initial);
         while (!frontier.empty()) {
-            FiniteState current = frontier.pop();
+            NFiniteState current = frontier.pop();
             if (!visited.contains(current)) {
                 visited.add(current);
-                ArrayList<FiniteState> children = current.getChildren();
-                for (FiniteState child : children) {
+                ArrayList<NFiniteState> children = current.getChildren();
+                for (NFiniteState child : children) {
                     frontier.add(child);
                 }
             }
@@ -245,9 +243,9 @@ public class NFA {
                         "edge { text-alignment: along; text-background-mode: plain; text-background-color: yellow; text-size: 14; text-padding: 5, 0; }";
         graph.addAttribute("ui.stylesheet", styles);
 
-        ArrayList<FiniteState> states = getAllStates();
+        ArrayList<NFiniteState> states = getAllStates();
 
-        for (FiniteState state : states) {
+        for (NFiniteState state : states) {
             Node node = graph.addNode("N" + nodes++);
             if (state.equals(initialState)) {
                 node.addAttribute("ui.label", "START");
@@ -257,11 +255,11 @@ public class NFA {
             }
         }
 
-        for (FiniteState state : states) {
+        for (NFiniteState state : states) {
             String src = "N" + states.indexOf(state);
-            HashMap<String, ArrayList<FiniteState>> transitions = state.getTransitions();
+            HashMap<String, ArrayList<NFiniteState>> transitions = state.getTransitions();
             for (String input : transitions.keySet()) {
-                for (FiniteState child : transitions.get(input)) {
+                for (NFiniteState child : transitions.get(input)) {
                     String dst = "N" + states.indexOf(child);
                     Edge edge = graph.addEdge("E" + edges++, src, dst, true);
                     edge.addAttribute("ui.label", input);
