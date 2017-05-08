@@ -3,3 +3,7 @@ javacc-6.0/
 .idea/
 out/
 *.iml
+
+src/parser/CFlow.java
+src/parser/CFlow.jj
+src/parser/CFlowTokenManager.java
