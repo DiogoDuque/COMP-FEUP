@@ -2,6 +2,7 @@ package automata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
@@ -257,7 +258,7 @@ public class NFA {
 
         for (NFiniteState state : states) {
             String src = "N" + states.indexOf(state);
-            HashMap<String, ArrayList<NFiniteState>> transitions = state.getTransitions();
+            HashMap<String, HashSet<NFiniteState>> transitions = state.getTransitions();
             for (String input : transitions.keySet()) {
                 for (NFiniteState child : transitions.get(input)) {
                     String dst = "N" + states.indexOf(child);

@@ -10,6 +10,7 @@ package parser;
 import java.io.StringReader;
 
 import automata.NFA;
+import automata.DFA;
 
 public class CFlow {
 	public static void main(String args[]) throws ParseException {
@@ -28,6 +29,7 @@ public class CFlow {
 
 		NFA nfa = NFA.init(root);
 		nfa.display();
+		DFA dfa = DFA.init(nfa);
 	}
 }
 	
