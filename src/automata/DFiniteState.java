@@ -2,14 +2,17 @@ package automata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class DFiniteState {
-    private static int nextId = 1;
+    private static int nextId = 0;
+    private HashSet<Integer> nfaStatesIds;
     private HashMap<String, DFiniteState> transitions;
     private int id;
 
     public DFiniteState() {
-        transitions = new HashMap<String, DFiniteState>();
+        nfaStatesIds = new HashSet<>();
+        transitions = new HashMap<>();
         id=nextId;
         nextId++;
     }
@@ -36,6 +39,16 @@ public class DFiniteState {
 
     public int getId(){
         return id;
+    }
+
+    public boolean compareState(HashSet<NFiniteState> nfaStates){
+        if(nfaStates.size() != nfaStatesIds.size())
+            return false;
+        for(NFiniteState state : nfaStates){
+            if(!nfaStatesIds.contains(state.getId()))
+                return false;
+        }
+        return true;
     }
 
     @Override
