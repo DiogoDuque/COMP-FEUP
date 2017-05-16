@@ -10,11 +10,17 @@ public class DFiniteState {
     private HashMap<String, DFiniteState> transitions;
     private int id;
 
-    public DFiniteState() {
+    DFiniteState(HashSet<NFiniteState> nfaStates, HashMap<String, DFiniteState> transitions) {
         nfaStatesIds = new HashSet<>();
-        transitions = new HashMap<>();
+        addNfaStatesIds(nfaStates);
+        this.transitions = transitions;
         id=nextId;
         nextId++;
+    }
+
+    private void addNfaStatesIds(HashSet<NFiniteState> nfaStates){
+        for(NFiniteState state : nfaStates)
+            nfaStatesIds.add(state.getId());
     }
 
     public boolean addTransition(DFiniteState state, String input) {
@@ -37,7 +43,7 @@ public class DFiniteState {
         return transitions;
     }
 
-    public int getId(){
+    int getId(){
         return id;
     }
 

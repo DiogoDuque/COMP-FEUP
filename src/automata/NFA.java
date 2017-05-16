@@ -248,11 +248,12 @@ public class NFA {
 
         for (NFiniteState state : states) {
             Node node = graph.addNode("N" + nodes++);
+            node.addAttribute("ui.label",state.getId());
             if (state.equals(initialState)) {
-                node.addAttribute("ui.label", "START");
+                node.addAttribute("ui.label", "START("+state.getId()+")");
             }
             if (state.equals(finalState)) {
-                node.addAttribute("ui.label", "END");
+                node.addAttribute("ui.label", "END("+state.getId()+")");
             }
         }
 

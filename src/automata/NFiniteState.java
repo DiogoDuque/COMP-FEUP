@@ -38,12 +38,23 @@ public class NFiniteState {
             }
         }
 
-        return epsilonClosure==null ? new HashSet<NFiniteState>() : epsilonClosure;
+        return epsilonClosure==null ? new HashSet<>() : epsilonClosure;
     }
 
     HashMap<String,HashSet<NFiniteState>> getNormalClosure(){
         HashMap<String,HashSet<NFiniteState>> closure = (HashMap<String,HashSet<NFiniteState>>)transitions.clone();
         closure.remove(NFA.EPSILON);
+
+        //add e-transitions after input
+        for(Map.Entry<String,HashSet<NFiniteState>> transitionSet : closure.entrySet()){
+            HashSet<NFiniteState> transitions = transitionSet.getValue(),
+                                    eTransitions = new HashSet<>();
+            for(NFiniteState state : transitions){
+                eTransitions.addAll(state.getEpsilonClosure());
+            }
+            transitions.addAll(eTransitions);
+        }
+
         return closure;
     }
 
@@ -78,11 +89,21 @@ public class NFiniteState {
 
     @Override
     public String toString() {
-        String ret = new String();
+        String ret = "{id="+id;
         Set<Map.Entry<String, HashSet<NFiniteState>>> entrySet = transitions.entrySet();
+        if(!entrySet.isEmpty())
+            ret += ", transitions[";
         for(Map.Entry<String, HashSet<NFiniteState>> entry : entrySet){
-            ret+="("+entry.getKey()+", "+entry.getValue().size()+")";
+            ret+="(k="+entry.getKey()+", [";
+            for(NFiniteState state : entry.getValue()){
+                ret+=state.getId()+", ";
+            }
+            ret.substring(0,ret.length()-1);
+            ret+="])";
         }
+        if(!entrySet.isEmpty())
+            ret += "]";
+        ret += "}";
         return ret;
     }
 }
