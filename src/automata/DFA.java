@@ -8,6 +8,7 @@ public class DFA {
     private HashSet<DFiniteState> allStates;
 
 	public DFA(NFA nfa) {
+	    allStates = new HashSet<>();
         NFiniteState root = nfa.getInitialState();
         HashSet<NFiniteState> rootSet = new HashSet<>();
         rootSet.add(root);
@@ -34,18 +35,55 @@ public class DFA {
             }
         }
 
-        //TODO translate transitions from NFA_states to DFA_states
-        //When translating, check if dfaState already exists (if a dfa_state already contains all nfa_states in this one) and handle it
-
-        //DFiniteState dfaState = new DFiniteState(nfaStates, dfaTransitions);
-        //states.add(dfaState);
-
-        /*
-        for(Map.Entry<String,HashSet<NFiniteState>> mapping : transitions.entrySet()){
-            for(HashSet<NFiniteState> futureDfaState : mapping.getValue()){
-                iterateThroughNFA(futureDfaState);
+        //check if DFA with these NFA_states already exists. If so, add transitions. Else, create state and add transitions
+        DFiniteState dfaState = getDfaState(nfaStates);
+        if(dfaState != null){ //if dfaState already exists, just add transitions
+            int noOfTransitions = dfaState.getTransitions().size();
+            HashMap<String, DFiniteState> dfaTransitions = mapNfaTransitionsToDfa(transitions);
+            for(Map.Entry<String, DFiniteState> dfaTransition : dfaTransitions.entrySet()){
+                boolean worked = dfaState.addTransition(dfaTransition.getKey(), dfaTransition.getValue());
+                if(!worked)
+                    System.out.println("DEBUG: COULD NOT ADD TRANSITION");
             }
+            if(noOfTransitions == dfaState.getTransitions().size()) //no new transitions were added
+                return;
+        } else {//translate transitions from NFA_states to DFA_states, and create new DFA_state
+            dfaState = new DFiniteState(nfaStates, mapNfaTransitionsToDfa(transitions));
+            allStates.add(dfaState);
         }
-        */
+
+        for(Map.Entry<String, DFiniteState> tmpTransition : dfaState.getTransitions().entrySet()) {
+            iterateThroughNFA(tmpTransition.getValue().getNfaStates());
+        }
+
+    }
+
+    private HashMap<String,DFiniteState> mapNfaTransitionsToDfa(HashMap<String,HashSet<NFiniteState>> nfaTransitions){
+        HashMap<String,DFiniteState> dfaTransitions = new HashMap<>();
+
+        for(Map.Entry<String,HashSet<NFiniteState>> nfaTransition : nfaTransitions.entrySet()){ //map each input's transition
+            String input = nfaTransition.getKey();
+            HashSet<NFiniteState> nfaStates = nfaTransition.getValue();
+            DFiniteState dfaState = getDfaState(nfaStates);
+            if(dfaState == null) {
+                dfaState = new DFiniteState(nfaStates);
+                allStates.add(dfaState);
+            }
+            dfaTransitions.put(input,dfaState);
+        }
+
+        return dfaTransitions;
+    }
+
+    private DFiniteState getDfaState(HashSet<NFiniteState> nfaStates){
+        for(DFiniteState dfaState : allStates){
+            if(dfaState.compareState(nfaStates))
+                return dfaState;
+        }
+        return null;
+    }
+
+    public HashSet<DFiniteState> getAllStates(){
+        return allStates;
     }
 }

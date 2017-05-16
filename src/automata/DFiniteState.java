@@ -3,27 +3,31 @@ package automata;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class DFiniteState {
     private static int nextId = 0;
-    private HashSet<Integer> nfaStatesIds;
+    private HashSet<NFiniteState> nfaStates;
     private HashMap<String, DFiniteState> transitions;
     private int id;
 
     DFiniteState(HashSet<NFiniteState> nfaStates, HashMap<String, DFiniteState> transitions) {
-        nfaStatesIds = new HashSet<>();
-        addNfaStatesIds(nfaStates);
+        this.nfaStates = new HashSet<>();
+        this.nfaStates.addAll(nfaStates);
         this.transitions = transitions;
         id=nextId;
         nextId++;
     }
 
-    private void addNfaStatesIds(HashSet<NFiniteState> nfaStates){
-        for(NFiniteState state : nfaStates)
-            nfaStatesIds.add(state.getId());
+    DFiniteState(HashSet<NFiniteState> nfaStates) {
+        this.nfaStates = new HashSet<>();
+        this.nfaStates.addAll(nfaStates);
+        this.transitions = new HashMap<>();
+        id=nextId;
+        nextId++;
     }
 
-    public boolean addTransition(DFiniteState state, String input) {
+    boolean addTransition(String input, DFiniteState state) {
         DFiniteState currentTransition = transitions.get(input);
         if (currentTransition == null) {
             transitions.put(input, state);
@@ -31,15 +35,8 @@ public class DFiniteState {
         } else return false;
     }
 
-    public ArrayList<DFiniteState> getChildren() {
-        ArrayList<DFiniteState> children = new ArrayList<>();
-        for (DFiniteState transition : transitions.values()) {
-            children.add(transition);
-        }
-        return children;
-    }
 
-    public HashMap<String, DFiniteState> getTransitions() {
+    HashMap<String, DFiniteState> getTransitions() {
         return transitions;
     }
 
@@ -47,11 +44,15 @@ public class DFiniteState {
         return id;
     }
 
-    public boolean compareState(HashSet<NFiniteState> nfaStates){
-        if(nfaStates.size() != nfaStatesIds.size())
+    HashSet<NFiniteState> getNfaStates() {
+        return nfaStates;
+    }
+
+    boolean compareState(HashSet<NFiniteState> nfaStates){
+        if(nfaStates.size() != nfaStates.size())
             return false;
         for(NFiniteState state : nfaStates){
-            if(!nfaStatesIds.contains(state.getId()))
+            if(!nfaStates.contains(state))
                 return false;
         }
         return true;
@@ -68,5 +69,20 @@ public class DFiniteState {
         else return false;
 
         return id==state.getId();
+    }
+
+    @Override
+    public String toString(){
+        String s = "{id="+id+", [";
+        for(Map.Entry<String, DFiniteState> transition : transitions.entrySet()){
+            s += "("+transition.getKey()+", "+transition.getValue().getId()+"), ";
+        }
+
+        if(transitions.entrySet().size()!=0)
+            s = s.substring(0,s.length()-2);
+
+        s += "]}";
+
+        return s;
     }
 }

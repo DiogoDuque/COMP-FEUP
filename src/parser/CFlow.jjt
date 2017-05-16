@@ -30,6 +30,7 @@ public class CFlow {
 		NFA nfa = NFA.init(root);
 		nfa.display();
 		DFA dfa = new DFA(nfa);
+		System.out.println(dfa.getAllStates());
 	}
 }
 	
