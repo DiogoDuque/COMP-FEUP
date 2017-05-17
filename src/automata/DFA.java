@@ -42,7 +42,6 @@ public class DFA {
         }
     }
 
-
     private void iterateThroughNFA(HashSet<NFiniteState> states){
 	    //get the set of NFA_states that will be a DFA_state
         HashSet<NFiniteState> nfaStates = new HashSet<>(states);
@@ -67,9 +66,7 @@ public class DFA {
             int noOfTransitions = dfaState.getTransitions().size();
             HashMap<String, DFiniteState> dfaTransitions = mapNfaTransitionsToDfa(transitions);
             for(Map.Entry<String, DFiniteState> dfaTransition : dfaTransitions.entrySet()){
-                boolean worked = dfaState.addTransition(dfaTransition.getKey(), dfaTransition.getValue());
-                if(!worked)
-                    System.out.println("DEBUG: COULD NOT ADD TRANSITION");
+                dfaState.addTransition(dfaTransition.getKey(), dfaTransition.getValue());
             }
             if(noOfTransitions == dfaState.getTransitions().size()) //no new transitions were added
                 return;
@@ -130,10 +127,10 @@ public class DFA {
             boolean isInitialState = state.equals(initialState), isFinalState = finalStates.contains(state);
             if (isInitialState) {
                 if(isFinalState)
-                    node.addAttribute("ui.label", "START/END("+state.getId()+")");
-                else node.addAttribute("ui.label", "START("+state.getId()+")");
+                    node.addAttribute("ui.label", "START/END("+state.getNfaStatesIds()+")");
+                else node.addAttribute("ui.label", "START("+state.getNfaStatesIds()+")");
             } else if (isFinalState) {
-                node.addAttribute("ui.label", "END("+state.getId()+")");
+                node.addAttribute("ui.label", "END("+state.getNfaStatesIds()+")");
             }
         }
 

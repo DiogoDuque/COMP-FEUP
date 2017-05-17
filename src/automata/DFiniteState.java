@@ -27,14 +27,19 @@ public class DFiniteState {
         nextId++;
     }
 
-    boolean addTransition(String input, DFiniteState state) {
+    void addTransition(String input, DFiniteState state) {
         DFiniteState currentTransition = transitions.get(input);
-        if (currentTransition == null) {
+        if (currentTransition == null)
             transitions.put(input, state);
-            return true;
-        } else return false;
     }
 
+    ArrayList<Integer> getNfaStatesIds(){
+        ArrayList<Integer> ids = new ArrayList<>();
+        for(NFiniteState state : nfaStates){
+            ids.add(state.getId());
+        }
+        return ids;
+    }
 
     HashMap<String, DFiniteState> getTransitions() {
         return transitions;
