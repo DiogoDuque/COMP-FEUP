@@ -100,4 +100,13 @@ public class DFiniteState {
 
         return s;
     }
+
+    /**
+     * Makes a transition.
+     * @param input value used to trigger the transition.
+     * @return returns the new DFiniteState, null if the transition does not exist.
+     */
+    public DFiniteState transitionThrough(String input){
+        return transitions.get(input);
+    }
 }
