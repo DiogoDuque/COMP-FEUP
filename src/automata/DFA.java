@@ -1,5 +1,10 @@
 package automata;
 
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
+
 import java.util.*;
 
 public class DFA {
@@ -9,11 +14,32 @@ public class DFA {
 
 	public DFA(NFA nfa) {
 	    allStates = new HashSet<>();
+	    finalStates = new ArrayList<>();
         NFiniteState root = nfa.getInitialState();
         HashSet<NFiniteState> rootSet = new HashSet<>();
         rootSet.add(root);
         iterateThroughNFA(rootSet);
-        finalStates = null;
+        addInitialState(nfa);
+        addFinalState(nfa);
+    }
+
+    private void addFinalState(NFA nfa) {
+        NFiniteState nfaFinalState = nfa.getFinalState();
+        for(DFiniteState dfaState : allStates){
+            if(dfaState.isComposedBy(nfaFinalState)){
+                finalStates.add(dfaState);
+            }
+        }
+    }
+
+    private void addInitialState(NFA nfa) {
+        NFiniteState nfaInitialState = nfa.getInitialState();
+        for(DFiniteState dfaState : allStates){
+            if(dfaState.isComposedBy(nfaInitialState)){
+                initialState = dfaState;
+                return;
+            }
+        }
     }
 
 
@@ -77,7 +103,7 @@ public class DFA {
 
     private DFiniteState getDfaState(HashSet<NFiniteState> nfaStates){
         for(DFiniteState dfaState : allStates){
-            if(dfaState.compareState(nfaStates))
+            if(dfaState.isComposedBy(nfaStates))
                 return dfaState;
         }
         return null;
@@ -85,5 +111,43 @@ public class DFA {
 
     public HashSet<DFiniteState> getAllStates(){
         return allStates;
+    }
+
+    public void display() {
+        Graph graph = new MultiGraph("DFA");
+        int nodes = 0;
+        int edges = 0;
+
+        String styles = "node { text-alignment: above; text-background-mode: plain; text-background-color: yellow; text-padding: 5, 0; size: 30px; }" +
+                "edge { text-alignment: along; text-background-mode: plain; text-background-color: yellow; text-size: 14; text-padding: 5, 0; }";
+        graph.addAttribute("ui.stylesheet", styles);
+
+        ArrayList<DFiniteState> states = new ArrayList<>(getAllStates());
+
+        for (DFiniteState state : states) {
+            Node node = graph.addNode("N" + nodes++);
+            node.addAttribute("ui.label",state.getId());
+            boolean isInitialState = state.equals(initialState), isFinalState = finalStates.contains(state);
+            if (isInitialState) {
+                if(isFinalState)
+                    node.addAttribute("ui.label", "START/END("+state.getId()+")");
+                else node.addAttribute("ui.label", "START("+state.getId()+")");
+            } else if (isFinalState) {
+                node.addAttribute("ui.label", "END("+state.getId()+")");
+            }
+        }
+
+        for (DFiniteState state : states) {
+            String src = "N" + states.indexOf(state);
+
+            HashMap<String, DFiniteState> transitions = state.getTransitions();
+            for(Map.Entry<String, DFiniteState> transition : transitions.entrySet()){
+                String dst = "N" + states.indexOf(transition.getValue());
+                Edge edge = graph.addEdge("E" + edges++, src, dst, true);
+                edge.addAttribute("ui.label", transition.getKey());
+            }
+        }
+
+        graph.display();
     }
 }

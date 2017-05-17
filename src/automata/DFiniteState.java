@@ -48,14 +48,18 @@ public class DFiniteState {
         return nfaStates;
     }
 
-    boolean compareState(HashSet<NFiniteState> nfaStates){
-        if(nfaStates.size() != nfaStates.size())
+    boolean isComposedBy(HashSet<NFiniteState> nfaStates){
+        if(this.nfaStates.size() != nfaStates.size())
             return false;
         for(NFiniteState state : nfaStates){
-            if(!nfaStates.contains(state))
+            if(!this.nfaStates.contains(state))
                 return false;
         }
         return true;
+    }
+
+    boolean isComposedBy(NFiniteState nfaState){
+        return this.nfaStates.contains(nfaState);
     }
 
     @Override
@@ -73,7 +77,13 @@ public class DFiniteState {
 
     @Override
     public String toString(){
-        String s = "{id="+id+", [";
+        String s = "{id="+id+"(";
+        for(NFiniteState state : nfaStates){
+            s+=state.getId()+", ";
+        }
+        s = s.substring(0,s.length()-2);
+        s+=")"+", [";
+
         for(Map.Entry<String, DFiniteState> transition : transitions.entrySet()){
             s += "("+transition.getKey()+", "+transition.getValue().getId()+"), ";
         }

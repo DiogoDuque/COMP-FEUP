@@ -106,7 +106,7 @@ public class NFA {
         return NFA;
     }
 
-    public static NFA kleenestar(SimpleNode root) {
+    private static NFA kleenestar(SimpleNode root) {
         NFA NFA = new NFA();
         SimpleNode child = (SimpleNode) root.jjtGetChild(0);
         NFA inner = init(child);
