@@ -32,11 +32,13 @@ public class NFiniteState {
         HashSet<NFiniteState> epsilonClosure = transitions.get(NFA.EPSILON);
 
         if(epsilonClosure!=null){
-            for(NFiniteState state : epsilonClosure){
+            HashSet<NFiniteState> epsilonClosureClone = new HashSet<NFiniteState>(epsilonClosure);
+            for(NFiniteState state : epsilonClosureClone){
                 HashSet<NFiniteState> tmpEpsilonClosure = state.getEpsilonClosure();
                 epsilonClosure.addAll(tmpEpsilonClosure);
             }
         }
+
 
         return epsilonClosure==null ? new HashSet<>() : epsilonClosure;
     }
@@ -98,7 +100,7 @@ public class NFiniteState {
             for(NFiniteState state : entry.getValue()){
                 ret+=state.getId()+", ";
             }
-            ret.substring(0,ret.length()-1);
+            ret=ret.substring(0,ret.length()-2);
             ret+="])";
         }
         if(!entrySet.isEmpty())
