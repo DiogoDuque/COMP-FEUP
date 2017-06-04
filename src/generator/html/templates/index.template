@@ -71,6 +71,14 @@
             font-family: Impact, Charcoal, sans-serif;
             font-weight: normal;
         }
+
+        .green {
+            color: green;
+        }
+
+        .red {
+            color: red;
+        }
     </style>
 </head>
 
@@ -80,18 +88,28 @@
     <header>
     <h1>Cflow Statistics</h1>
     <ul>
+        <li><a href="#result">Result</a> |</li>
         <li><a href="#overview">Overview</a> |</li>
-        <li><a href="#transition-frequency">Transition Frequency</a></li>
+        <li><a href="#transition-frequency">Transition Frequency</a> |</li>
+        <li><a href="#details">Details</a></li>
     </ul>
     </header>
 
-    <h2 id="overview">1. Overview</h2>
-    <p>Number of DFA states generated: {{ dfa-states }}</p>
-    <p>Number of DFA final states: {{ dfa-final-states }}</p>
-    <p>Number of transitions made: {{ dfa-transitions }}</p>
+    <h2 id="result">1. Result</h2>
+    <p>{{ cflow-result }}</p>
 
-    <h2 id="transition-frequency">2. Transition Frequency</h2>
+    <h2 id="overview">2. Overview</h2>
+    <p><strong>{{ dfa-states }}</strong> DFA states generated</p>
+    <p><strong>{{ dfa-final-states }}</strong> DFA final state(s)</p>
+    <p><strong>{{ dfa-transitions }}</strong> DFA transitions made</p>
+
+    <h2 id="transition-frequency">3. Transition Frequency</h2>
     <svg class="chart"></svg>
+
+    <h2 id="details">4. Details</h2>
+    <p>The first transition was <strong>{{ first-transition }}</strong></p>
+    <p>The last transition was <strong>{{ last-transition }}</strong></p>
+    <p>The program executed in <strong>{{ execution-time }}</strong> nano-seconds</p>
 
     <script>
         const margin = { top: 20, right: 30, bottom: 30, left: 40 };

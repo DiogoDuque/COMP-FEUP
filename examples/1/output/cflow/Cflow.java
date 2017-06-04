@@ -9,6 +9,9 @@ import java.nio.file.*;
 import java.nio.charset.*;
 
 public class Cflow {
+	public static long startTime;
+	public static long endTime;
+
 	public static int currentState = 1;
 
 	public static int initialState = 1;
@@ -66,6 +69,8 @@ public class Cflow {
 	}
 
 	public static void next(String input) {
+
+		if (transitionsMade.isEmpty()) startTime = System.nanoTime();
 		transitionsMade.add(input);
 		if (transitions.get(currentState) != null && transitions.get(currentState).get(input) != null) {
 			currentState = transitions.get(currentState).get(input);
@@ -75,6 +80,7 @@ public class Cflow {
 	}
 
 	public static void success() {
+		endTime = System.nanoTime();
 		if (finalStates.contains(currentState)) {
 			System.out.println("[CFLOW: Success]");
 		} else {
@@ -83,7 +89,13 @@ public class Cflow {
 		try {
 		frequency();
 			String content = replace(read("output/cflow/html/templates/index.template", StandardCharsets.UTF_8));
-			write("html/index.html", content);
+			String result = "";
+			if (finalStates.contains(currentState)) {
+				result = content.replace("{{ cflow-result }}", "<span class=\"green\">[SUCCESS]</span> The program flow matches with the regex.");
+			} else {
+				result = content.replace("{{ cflow-result }}", "<span class=\"red\">[FAILURE]</span> The program flow does not match with the regex.");
+			}
+			write("html/index.html", result);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,7 +116,10 @@ public class Cflow {
 	public static String replace(String content) {
 		return content.replace("{{ dfa-states }}", Integer.toString(numberOfStates))
 			.replace("{{ dfa-final-states }}", Integer.toString(finalStates.size()))
-			.replace("{{ dfa-transitions }}", Integer.toString(transitionsMade.size()));
+			.replace("{{ dfa-transitions }}", Integer.toString(transitionsMade.size()))
+			.replace("{{ first-transition }}", transitionsMade.get(0))
+			.replace("{{ last-transition }}", transitionsMade.get(transitionsMade.size() - 1))
+			.replace("{{ execution-time }}", Long.toString(endTime - startTime));
 	}
 
 	public static void frequency() throws IOException {
@@ -113,6 +128,6 @@ public class Cflow {
 		for (String key : unique) {
 			data += key + "\t" + Collections.frequency(transitionsMade, key) + "\n";
 		}
-		write("html/data.tsv", data);
+		write("html/data.tsv", data.substring(0, data.length() - 1));
 	}
 }

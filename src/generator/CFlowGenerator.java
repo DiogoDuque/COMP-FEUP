@@ -33,9 +33,14 @@ public class CFlowGenerator {
         writer.println("\npublic class Cflow {");
     }
 
+    private void times() {
+        writer.println("\tpublic static long startTime;");
+        writer.println("\tpublic static long endTime;");
+    }
+
     private void initialState() {
         int state = dfa.getInitialState().getId();
-        writer.println("\tpublic static int currentState = " + state + ";");
+        writer.println("\n\tpublic static int currentState = " + state + ";");
         writer.println("\n\tpublic static int initialState = " + state + ";");
     }
 
@@ -79,6 +84,7 @@ public class CFlowGenerator {
 
     private void next() {
         writer.println("\n\tpublic static void next(String input) {");
+        writer.println("\n\t\tif (transitionsMade.isEmpty()) startTime = System.nanoTime();");
         writer.println("\t\ttransitionsMade.add(input);");
         writer.println("\t\tif (transitions.get(currentState) != null && transitions.get(currentState).get(input) != null) {");
         writer.println("\t\t\tcurrentState = transitions.get(currentState).get(input);");
@@ -90,6 +96,7 @@ public class CFlowGenerator {
 
     private void success() {
         writer.println("\n\tpublic static void success() {");
+        writer.println("\t\tendTime = System.nanoTime();");
         writer.println("\t\tif (finalStates.contains(currentState)) {");
         writer.println("\t\t\tSystem.out.println(\"[CFLOW: Success]\");");
         writer.println("\t\t} else {");
@@ -98,7 +105,13 @@ public class CFlowGenerator {
         writer.println("\t\ttry {");
         writer.println("\t\tfrequency();");
         writer.println("\t\t\tString content = replace(read(\"output/cflow/html/templates/index.template\", StandardCharsets.UTF_8));");
-        writer.println("\t\t\twrite(\"html/index.html\", content);");
+        writer.println("\t\t\tString result = \"\";");
+        writer.println("\t\t\tif (finalStates.contains(currentState)) {");
+        writer.println("\t\t\t\tresult = content.replace(\"{{ cflow-result }}\", \"<span class=\\\"green\\\">[SUCCESS]</span> The program flow matches with the regex.\");");
+        writer.println("\t\t\t} else {");
+        writer.println("\t\t\t\tresult = content.replace(\"{{ cflow-result }}\", \"<span class=\\\"red\\\">[FAILURE]</span> The program flow does not match with the regex.\");");
+        writer.println("\t\t\t}");
+        writer.println("\t\t\twrite(\"html/index.html\", result);");
         writer.println("\t\t} catch (IOException e) {");
         writer.println("\t\t\te.printStackTrace();");
         writer.println("\t\t}");
@@ -125,15 +138,19 @@ public class CFlowGenerator {
         writer.println("\n\tpublic static String replace(String content) {");
         writer.println("\t\treturn content.replace(\"{{ dfa-states }}\", Integer.toString(numberOfStates))");
         writer.println("\t\t\t.replace(\"{{ dfa-final-states }}\", Integer.toString(finalStates.size()))");
-        writer.println("\t\t\t.replace(\"{{ dfa-transitions }}\", Integer.toString(transitionsMade.size()));");
+        writer.println("\t\t\t.replace(\"{{ dfa-transitions }}\", Integer.toString(transitionsMade.size()))");
+        writer.println("\t\t\t.replace(\"{{ first-transition }}\", transitionsMade.get(0))");
+        writer.println("\t\t\t.replace(\"{{ last-transition }}\", transitionsMade.get(transitionsMade.size() - 1))");
+        writer.println("\t\t\t.replace(\"{{ execution-time }}\", Long.toString(endTime - startTime));");
         writer.println("\t}");
     }
 
     /*
-    Set<String> unique = new HashSet<String>(list);
-    for (String key : unique) {
-        System.out.println(key + ": " + Collections.frequency(list, key));
-    }
+    long startTime = System.nanoTime();
+
+    long endTime = System.nanoTime();
+
+    long duration = (endTime - startTime);
     */
     private void frequency() {
         writer.println("\n\tpublic static void frequency() throws IOException {");
@@ -142,7 +159,7 @@ public class CFlowGenerator {
         writer.println("\t\tfor (String key : unique) {");
         writer.println("\t\t\tdata += key + \"\\t\" + Collections.frequency(transitionsMade, key) + \"\\n\";");
         writer.println("\t\t}");
-        writer.println("\t\twrite(\"html/data.tsv\", data);");
+        writer.println("\t\twrite(\"html/data.tsv\", data.substring(0, data.length() - 1));");
         writer.println("\t}");
     }
 
@@ -154,6 +171,7 @@ public class CFlowGenerator {
     public void generate() {
         imports();
         begin();
+        times();
         initialState();
         numberOfStates();
         finalStates();
