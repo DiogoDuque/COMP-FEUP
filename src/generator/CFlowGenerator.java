@@ -24,6 +24,9 @@ public class CFlowGenerator {
     private void imports() {
         writer.println("package cflow;");
         writer.println("\nimport java.util.*;");
+        writer.println("\nimport java.io.*;");
+        writer.println("\nimport java.nio.file.*;");
+        writer.println("\nimport java.nio.charset.*;");
     }
 
     private void begin() {
@@ -36,6 +39,11 @@ public class CFlowGenerator {
         writer.println("\n\tpublic static int initialState = " + state + ";");
     }
 
+    private void numberOfStates() {
+        int number = dfa.getAllStates().size();
+        writer.println("\n\tpublic static int numberOfStates = " + number + ";");
+    }
+
     private void finalStates() {
         writer.println("\n\tpublic static ArrayList<Integer> finalStates;");
         writer.println("\tstatic {");
@@ -44,6 +52,13 @@ public class CFlowGenerator {
             int state = dfastate.getId();
             writer.println("\t\tfinalStates.add(" + state + ");");
         }
+        writer.println("\t}");
+    }
+
+    private void transitionsMade() {
+        writer.println("\n\tpublic static ArrayList<String> transitionsMade;");
+        writer.println("\tstatic {");
+        writer.println("\t\ttransitionsMade = new ArrayList<>();");
         writer.println("\t}");
     }
 
@@ -64,6 +79,7 @@ public class CFlowGenerator {
 
     private void next() {
         writer.println("\n\tpublic static void next(String input) {");
+        writer.println("\t\ttransitionsMade.add(input);");
         writer.println("\t\tif (transitions.get(currentState) != null && transitions.get(currentState).get(input) != null) {");
         writer.println("\t\t\tcurrentState = transitions.get(currentState).get(input);");
         writer.println("\t\t} else {");
@@ -79,6 +95,54 @@ public class CFlowGenerator {
         writer.println("\t\t} else {");
         writer.println("\t\t\tSystem.out.println(\"[CFLOW: Failed]\");");
         writer.println("\t\t}");
+        writer.println("\t\ttry {");
+        writer.println("\t\tfrequency();");
+        writer.println("\t\t\tString content = replace(read(\"output/cflow/html/templates/index.template\", StandardCharsets.UTF_8));");
+        writer.println("\t\t\twrite(\"html/index.html\", content);");
+        writer.println("\t\t} catch (IOException e) {");
+        writer.println("\t\t\te.printStackTrace();");
+        writer.println("\t\t}");
+        writer.println("\t}");
+    }
+
+    private void read() {
+        writer.println("\n\tpublic static String read(String path, Charset encoding) throws IOException {");
+        writer.println("\t\tbyte[] encoded = Files.readAllBytes(Paths.get(path));");
+        writer.println("\t\treturn new String(encoded, encoding);");
+        writer.println("\t}");
+    }
+
+    private void write() {
+        writer.println("\n\tpublic static void write(String path, String content) throws IOException {");
+        writer.println("\t\tnew File(path).getParentFile().mkdirs();");
+        writer.println("\t\tPrintWriter out = new PrintWriter(path);");
+        writer.println("\t\tout.println(content);");
+        writer.println("\t\tout.close();");
+        writer.println("\t}");
+    }
+
+    private void replace() {
+        writer.println("\n\tpublic static String replace(String content) {");
+        writer.println("\t\treturn content.replace(\"{{ dfa-states }}\", Integer.toString(numberOfStates))");
+        writer.println("\t\t\t.replace(\"{{ dfa-final-states }}\", Integer.toString(finalStates.size()))");
+        writer.println("\t\t\t.replace(\"{{ dfa-transitions }}\", Integer.toString(transitionsMade.size()));");
+        writer.println("\t}");
+    }
+
+    /*
+    Set<String> unique = new HashSet<String>(list);
+    for (String key : unique) {
+        System.out.println(key + ": " + Collections.frequency(list, key));
+    }
+    */
+    private void frequency() {
+        writer.println("\n\tpublic static void frequency() throws IOException {");
+        writer.println("\t\tString data = \"name\\tvalue\\n\";");
+        writer.println("\t\tSet<String> unique = new HashSet<String>(transitionsMade);");
+        writer.println("\t\tfor (String key : unique) {");
+        writer.println("\t\t\tdata += key + \"\\t\" + Collections.frequency(transitionsMade, key) + \"\\n\";");
+        writer.println("\t\t}");
+        writer.println("\t\twrite(\"html/data.tsv\", data);");
         writer.println("\t}");
     }
 
@@ -91,10 +155,16 @@ public class CFlowGenerator {
         imports();
         begin();
         initialState();
+        numberOfStates();
         finalStates();
+        transitionsMade();
         transitions();
         next();
         success();
+        read();
+        write();
+        replace();
+        frequency();
         end();
     }
 }

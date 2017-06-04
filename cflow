@@ -27,3 +27,6 @@ rm -Rf bin/*
 # Compile
 javac -cp ".:lib/gs-core-1.3/gs-core-1.3.jar:lib/gs-ui-1.3/gs-ui-1.3.jar" $(find ./src/* | grep .java) -d bin/
 java -cp ".:lib/gs-core-1.3/gs-core-1.3.jar:lib/gs-ui-1.3/gs-ui-1.3.jar:bin/" parser.CFlow $1 $3
+
+# Copy the HTML template files
+cp -rf src/generator/html $3cflow/

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Cflow Statistics</title>
+    <meta name="description" content="Cflow Statistics">
+
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+
+        .axis text {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            display: none;
+        }
+
+        header {
+            background-color: #fafafa;
+            border-left: 5px solid steelblue;
+            padding: 10px;
+            font-family: Impact, Charcoal, sans-serif;
+            font-weight: normal;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        header ul li { 
+            display: inline; 
+            opacity: 0.25;
+        }
+
+        header ul li a { 
+            text-decoration: none;
+            color: black;
+        }
+
+        h2 {
+            background-color: #fafafa;
+            border-left: 5px solid steelblue;
+            padding: 10px;
+            font-family: Impact, Charcoal, sans-serif;
+            font-weight: normal;
+        }
+
+        p {
+            padding: 10px;
+            background-color: #fafafa;
+            margin: 5px 5px 5px 10px;
+            border-left: 5px solid orange;
+            font-family: Impact, Charcoal, sans-serif;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <header>
+    <h1>Cflow Statistics</h1>
+    <ul>
+        <li><a href="#overview">Overview</a> |</li>
+        <li><a href="#transition-frequency">Transition Frequency</a></li>
+    </ul>
+    </header>
+
+    <h2 id="overview">1. Overview</h2>
+    <p>Number of DFA states generated: {{ dfa-states }}</p>
+    <p>Number of DFA final states: {{ dfa-final-states }}</p>
+    <p>Number of transitions made: {{ dfa-transitions }}</p>
+
+    <h2 id="transition-frequency">2. Transition Frequency</h2>
+    <svg class="chart"></svg>
+
+    <script>
+        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        const x = d3.scaleBand()
+            .rangeRound([0, width])
+            .padding(.1);
+
+        const y = d3.scaleLinear()
+            .range([height, 0]);
+
+        const xAxis = d3.axisBottom(x);
+        const yAxis = d3.axisLeft(y);
+
+        const chart = d3.select('.chart')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+        d3.tsv('data.tsv', type, (error, data) => {
+            x.domain(data.map(d => d.name));
+            y.domain([0, d3.max(data, d => d.value)]);
+
+            chart.append('g')
+                .attr('class', 'x axis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(xAxis);
+
+            chart.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis);
+
+            chart.selectAll('.bar')
+                .data(data)
+                .enter().append('rect')
+                    .attr('class', 'bar')
+                    .attr('x', d => x(d.name))
+                    .attr('y', d => y(d.value))
+                    .attr('height', d => height - y(d.value))
+                    .attr('width', x.bandwidth());
+        });
+
+        function type(d) {
+            d.value = +d.value;
+            return d;
+        }
+    </script>
+</body>
+
+</html>

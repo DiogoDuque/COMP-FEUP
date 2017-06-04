@@ -2,15 +2,28 @@ package cflow;
 
 import java.util.*;
 
+import java.io.*;
+
+import java.nio.file.*;
+
+import java.nio.charset.*;
+
 public class Cflow {
 	public static int currentState = 1;
 
 	public static int initialState = 1;
 
+	public static int numberOfStates = 8;
+
 	public static ArrayList<Integer> finalStates;
 	static {
 		finalStates = new ArrayList<>();
 		finalStates.add(6);
+	}
+
+	public static ArrayList<String> transitionsMade;
+	static {
+		transitionsMade = new ArrayList<>();
 	}
 
 	public static Map<Integer, Map<String, Integer>> transitions;
@@ -53,6 +66,7 @@ public class Cflow {
 	}
 
 	public static void next(String input) {
+		transitionsMade.add(input);
 		if (transitions.get(currentState) != null && transitions.get(currentState).get(input) != null) {
 			currentState = transitions.get(currentState).get(input);
 		} else {
@@ -66,5 +80,39 @@ public class Cflow {
 		} else {
 			System.out.println("[CFLOW: Failed]");
 		}
+		try {
+		frequency();
+			String content = replace(read("output/cflow/html/templates/index.template", StandardCharsets.UTF_8));
+			write("html/index.html", content);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String read(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+
+	public static void write(String path, String content) throws IOException {
+		new File(path).getParentFile().mkdirs();
+		PrintWriter out = new PrintWriter(path);
+		out.println(content);
+		out.close();
+	}
+
+	public static String replace(String content) {
+		return content.replace("{{ dfa-states }}", Integer.toString(numberOfStates))
+			.replace("{{ dfa-final-states }}", Integer.toString(finalStates.size()))
+			.replace("{{ dfa-transitions }}", Integer.toString(transitionsMade.size()));
+	}
+
+	public static void frequency() throws IOException {
+		String data = "name\tvalue\n";
+		Set<String> unique = new HashSet<String>(transitionsMade);
+		for (String key : unique) {
+			data += key + "\t" + Collections.frequency(transitionsMade, key) + "\n";
+		}
+		write("html/data.tsv", data);
 	}
 }
