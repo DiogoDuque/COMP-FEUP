@@ -5,12 +5,14 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
+import java.io.PrintWriter;
 import java.util.*;
 
 public class DFA {
 	private DFiniteState initialState;
 	private ArrayList<DFiniteState> finalStates;
     private HashSet<DFiniteState> allStates;
+    private DFiniteState currentState;
 
 	public DFA(NFA nfa) {
 	    allStates = new HashSet<>();
@@ -21,6 +23,7 @@ public class DFA {
         iterateThroughNFA(rootSet);
         addInitialState(nfa);
         addFinalState(nfa);
+        currentState = initialState;
     }
 
     private void addFinalState(NFA nfa) {
@@ -108,6 +111,14 @@ public class DFA {
 
     public HashSet<DFiniteState> getAllStates(){
         return allStates;
+    }
+
+    public DFiniteState getInitialState() {
+        return initialState;
+    }
+
+    public ArrayList<DFiniteState> getFinalStates() {
+        return finalStates;
     }
 
     public void display() {

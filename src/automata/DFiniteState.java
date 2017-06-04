@@ -41,11 +41,11 @@ public class DFiniteState {
         return ids;
     }
 
-    HashMap<String, DFiniteState> getTransitions() {
+    public HashMap<String, DFiniteState> getTransitions() {
         return transitions;
     }
 
-    int getId(){
+    public int getId(){
         return id;
     }
 

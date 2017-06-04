@@ -11,27 +11,32 @@ import java.io.StringReader;
 
 import automata.NFA;
 import automata.DFA;
+import generator.CFlowGenerator;
 
 public class CFlow {
 	public static void main(String args[]) throws ParseException {
 		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
-		if(args.length != 1){
-			System.out.println("usage: cflow <regex>");
-			return;
-		}
 		String regex = args[0];	
 		StringReader reader = new StringReader(regex);
 
+		String outputDir = args[1];;
+
 		CFlow cflow = new CFlow(reader);
 		SimpleNode root = cflow.RegExp();
-		root.dump("");
+		// root.dump("");
 
 		NFA nfa = NFA.init(root);
-		nfa.display();
+		// nfa.display();
 		DFA dfa = new DFA(nfa);
-		dfa.display();
-		System.out.println(dfa.getAllStates());
+		// dfa.display();
+
+		try {
+			CFlowGenerator gen = new CFlowGenerator(dfa, outputDir);
+			gen.generate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
 	

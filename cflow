@@ -1,14 +1,29 @@
 #!/bin/bash
+# Exit if any command returns a non-zero value
+set -e
+
+# Check number of arguments
+if [ "$#" -lt 3 ]; then
+    echo "Usage: $0 <regex> <input_dir> <output_dir>"
+    exit
+fi
+
+# Run kadabra to the specified output dir
+java -jar lib/kadabra.jar src/aspect.lara -p $2 -o $3
+
+# Generate the parser
 cd src/parser
 jjtree CFlow.jjt
 javacc CFlow.jj
 cd ../..
 
+# Create bin dir
 if [ ! -d "bin" ]
 then
     mkdir bin
 fi
 rm -Rf bin/*
 
+# Compile
 javac -cp ".:lib/gs-core-1.3/gs-core-1.3.jar:lib/gs-ui-1.3/gs-ui-1.3.jar" $(find ./src/* | grep .java) -d bin/
-java -cp ".:lib/gs-core-1.3/gs-core-1.3.jar:lib/gs-ui-1.3/gs-ui-1.3.jar:bin/" parser.CFlow ${@:1}
+java -cp ".:lib/gs-core-1.3/gs-core-1.3.jar:lib/gs-ui-1.3/gs-ui-1.3.jar:bin/" parser.CFlow $1 $3
