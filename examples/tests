@@ -1,0 +1,5 @@
+A(BCE|BDE)+F
+AB(C(DE?)*)*FG*H
+AC(BC)*(D|E)F
+AB+CD*EF
+ABC(D)?(E(F)?)*G?(H|I)J
