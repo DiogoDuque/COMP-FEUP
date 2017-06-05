@@ -1,0 +1,1 @@
+O objetivo deste exemplo é demonstrar a execução do programa para casos simples, cuja complexidade corresponde a O(N). Se o código presente no ficheiro for aceite pela regex escolhida, como por exemplo "A(BCE|BDE)+F", então espera-se que o resultado seja bem sucedido. Caso contrário, espera-se que o resultado seja de insucesso.
