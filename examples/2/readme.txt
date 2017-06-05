@@ -1,1 +1,2 @@
-O objetivo deste exemplo é demonstrar a execução do programa para casos em que exista mais do que uma função e cuja complexidade seja diferente da demonstrada no primeiro exemplo. Se o código presente no ficheiro for aceite pela regex escolhida, como por exemplo "AB(C(DE?)*)*FG*H", então espera-se que o resultado seja bem sucedido. Caso contrário, espera-se que o resultado seja de insucesso.
+
+The purpose of this example is to show the execution of the program for cases where there is more than one function and whose complexity is different from the one demonstrated in the first example. If the code in the file is accepted by the chosen regex, such as "AB(C(DE?)*)*FG*H", it is expected a successful result. Otherwise, the result is expected to be unsuccessful.
