@@ -19,40 +19,33 @@ EXECUTE:
 3. You can already see in the result in the Terminal. However, if you want to see more information, do "firefox html/index.html".
 
 
-DEALING WITH SYNTACTIC ERRORS: (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
-Everytime a syntactic error happens, an exception is thrown showing what the problem was. Ex: if the problem was in the regular expression, the exception shows the "wrong symbol" and symbols that would be correct; if the input folder does not exist, 
-LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM
+DEALING WITH SYNTACTIC ERRORS:
+Everytime a syntactic error happens, an exception is thrown showing what the problem was. Ex: if the problem was in the regular expression (ex: *abc?), the exception shows the "wrong symbol" (in this case, the first "*") and symbols that would be correct instead of it.
 
 
-SEMANTIC ANALYSIS: (Refer the possible semantic rules implemented by your tool.)
-LOREM IPSUM 
-
-
-INTERMEDIATE REPRESENTATIONS (IRs): (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
-Lorem ipsum
+SEMANTIC ANALYSIS:
+Semantical errors are impossible in our "parsing language", so we didn't implement semantic analysis.
 
 
 CODE GENERATION: (when applicable, describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
 Lorem ipsum
 
 
-OVERVIEW: (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
-In our approach to this problem, we first started by defining the grammar for the regular expressions. If the regex is not accepted, the program is immediatly stopped. After the regex is accepted, we get the corresponding AST. After that, the AST is parsed into an epsilon-NFA, which is later transformed into a DFA (for performance and simplification purposes, or else the tool could become slow and too complex when running the tool with the program).
-While we were developing, we used the GraphStream library for visualizing the automatons as graphs, as it helped us to visualize our progress and made debugging easier. However, it the user still wants to see the graphs (either for the NFA or DFA), it would just need to uncomment the 2 "display()" calls on CFlow's "main()". We also used Kadabra for the LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM 
+OVERVIEW:
+In our approach to this problem, we first started by defining the grammar for the regular expressions, which accepts subsets of the PCRE format. If the regex is not accepted, the program is immediatly stopped. After the regex is accepted, we get the corresponding AST. After that, the AST is parsed into an epsilon-NFA using the "Thompson's Construction", which is later transformed into a DFA using the "Powerset Construction" (for performance and simplification purposes, or else the tool could become slow and too complex when running the tool with the program). The program is then run (with modifications for going through the DFA) to check if it is according to the original regex or not.
+While we were developing, we used the GraphStream library for visualizing the automatons as graphs, as it helped us to visualize our progress and made debugging easier. However, it the user still wants to see the graphs (either for the NFA or DFA), it would just need to uncomment the 2 "display()" calls on CFlow's "main()". We also used Kadabra during the last part of the project for running the BasicBlocks through the DFA during the execution of the program.
+
+TESTSUITE AND TEST INFRASTRUCTURE:
+Lorem ipsum (Describe the content of your testsuite regarding the number of examples, the approach to automate the test, etc.)
 
 
-TESTSUITE AND TEST INFRASTRUCTURE: (Describe the content of your testsuite regarding the number of examples, the approach to automate the test, etc.)
-Lorem ipsum
+TASK DISTRIBUTION:
+Lorem ipsum (Identify the set of tasks done by each member of the project.)
 
 
-**TASK DISTRIBUTION: (Identify the set of tasks done by each member of the project.)
-Lorem ipsum
+PROS:
+The tool does not appear to have any troubling bugs, errors or incomplete features, which is an important step for achieving stability and completeness. It also ends in a DFA run alongside the program, which causes negligible impact on performance during the program's execution.
 
 
-**PROS: (Identify the most positive aspects of your tool)
-Lorem ipsum
-
-
-**CONS: (Identify the most negative aspects of your tool)
-Lorem ipsum
-
+CONS:
+Does not support a large number of states since each state can only be represented by a letter. This means that a DFA can only have up to 54 states, since it's the number of letters in the alphabet (lowercase and uppercase).
