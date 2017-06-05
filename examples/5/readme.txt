@@ -1,0 +1,1 @@
+O objetivo deste exemplo é demonstrar a execução do programa para casos simples em que exista mais do que uma função. Se o código presente no ficheiro for aceite pela regex escolhida, como por exemplo "ABC(D)?(E(F)?)*G?(H|I)J", então espera-se que o resultado seja bem sucedido. Caso contrário, espera-se que o resultado seja de insucesso.
