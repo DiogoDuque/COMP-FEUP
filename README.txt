@@ -3,9 +3,9 @@ Project Title: P3 - cflow
 
 
 Group: G33
-NAME1: Catarina Correia, 	NR1: up201405765, GRADE1: <>, CONTRIBUTION1 <>
-NAME2: Diogo Duque, 		NR2: up201406274, GRADE2: <>, CONTRIBUTION2 <>
-NAME3: João Silva, 			NR3: up201405490, GRADE3: <>, CONTRIBUTION3 <>
+NAME1: Catarina Correia, 	NR1: up201405765, GRADE1: 20, CONTRIBUTION1 33%
+NAME2: Diogo Duque, 		NR2: up201406274, GRADE2: 20, CONTRIBUTION2 33%
+NAME3: João Silva, 			NR3: up201405490, GRADE3: 20, CONTRIBUTION3 33%
 
 
 SUMMARY:
@@ -36,11 +36,12 @@ In our approach to this problem, we first started by defining the grammar for th
 While we were developing, we used the GraphStream library for visualizing the automatons as graphs, as it helped us to visualize our progress and made debugging easier. However, it the user still wants to see the graphs (either for the NFA or DFA), it would just need to uncomment the 2 "display()" calls on CFlow's "main()". We also used Kadabra during the last part of the project for running the BasicBlocks through the DFA during the execution of the program.
 
 TESTSUITE AND TEST INFRASTRUCTURE:
-Lorem ipsum (Describe the content of your testsuite regarding the number of examples, the approach to automate the test, etc.)
-
+With our testsuite (containing 5 tests), we wanted to test every pattern that could appear in our regular expressions and in the testing programs.
+Regarding regular expressions, we made an effort to include as much variability as possible. We used all the quantifiers ('?', '+' and '*'), whether they were after a character or a block, blocks inside blocks, alternation, etc. We used all these in simple and complicated ways alike.
+As for code, we also made simple and complicated tests. We used 'for' and 'while' loops (sometimes chained in a row), 'if's and 'else's, many methods and even many files.
 
 TASK DISTRIBUTION:
-Lorem ipsum (Identify the set of tasks done by each member of the project.)
+Our work was very distributed, so we all worked on everything.
 
 
 PROS:
